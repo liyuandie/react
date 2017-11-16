@@ -7,7 +7,7 @@ import {
     withRouter
 } from 'react-router-dom';
 import styled from 'styled-components';
-import TodosApp from './Todos.jsx';
+import {TodosAll,TodosActive,TodosCompleted} from './Todos.jsx';
 
 
 const LogoutBtn = styled.button`
@@ -98,6 +98,12 @@ class Login extends Component {
     }
 
     login = () => {
+        if (this.state.user === '' || this.state.password === '') {
+            alert("请输入完整的用户名和密码！");
+            return;
+        }
+        localStorage.setItem("isLogin", "true");
+        localStorage.setItem("username", this.state.user);
         fakeAuth.login(() => {
             this.setState({ hasLogin: true })
         })
@@ -105,6 +111,7 @@ class Login extends Component {
 
     render() {
         let from = { pathname: '/' };
+        
         if (this.state.hasLogin) {
             return (<Redirect to={from} />);
         }
@@ -112,7 +119,7 @@ class Login extends Component {
             <TodoLogin>
                 <TodoappH1>Log in please! </TodoappH1>
                 <Input type="text" placeholder="请输入帐号" value={this.state.username} onChange={this.setUser} />
-                <Input type="text" placeholder="请输入密码" value={this.state.password} onChange={this.setPassword} />
+                <Input type="password" placeholder="请输入密码" value={this.state.password} onChange={this.setPassword} />
                 <LoginBtn type="button" onClick={this.login}>登录</LoginBtn>
             </TodoLogin>
         );
@@ -120,22 +127,22 @@ class Login extends Component {
 }
 
 const fakeAuth = {
-    hasLogin: false,
     login(cb) {
-        this.hasLogin = true
         setTimeout(cb, 100)
     },
     signout(cb) {
-        this.hasLogin = false
+        localStorage.setItem("isLogin", "false");
         setTimeout(cb, 100)
     }
 }
 
 const AuthBtn = withRouter(({ history }) => {
+    let user = localStorage.getItem('username')
+    let isLogin = JSON.parse(localStorage.getItem('isLogin'))
     return (
-        fakeAuth.hasLogin ? (
+        isLogin ? (
             <AuthP>
-                welcome!<LogoutBtn type="button" onClick={() => {
+                {user},welcome!<LogoutBtn type="button" onClick={() => {
                     fakeAuth.signout(() => history.push('/'))
                 }}>退出登录</LogoutBtn>
             </AuthP>
@@ -145,9 +152,10 @@ const AuthBtn = withRouter(({ history }) => {
     )
 })
 const PrivateRoute = ({ component: Component, ...rest }) => {
+    let isLogin = JSON.parse(localStorage.getItem('isLogin'))
     return (
         <Route {...rest} render={props => (
-            fakeAuth.hasLogin ? (
+            isLogin ? (
                 <Component {...props} />
             ) : (
                     <Redirect to={{
@@ -158,6 +166,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         )} />
     )
 }
+
+
 class Home extends Component {
     render() {
         return (
@@ -166,7 +176,10 @@ class Home extends Component {
                     <Route component={AuthBtn} />
                     <Switch>
                         <Route exact path="/login" component={Login} />
-                        <PrivateRoute path="/" component={TodosApp} />
+                        <PrivateRoute exact path="/" component={TodosAll} />
+                        <PrivateRoute path="/all" component={TodosAll} />
+                        <PrivateRoute path="/active" component={TodosActive} />
+                        <PrivateRoute path="/completed" component={TodosCompleted} />
                     </Switch>
                 </div>
             </Router>

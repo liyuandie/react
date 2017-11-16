@@ -2,22 +2,24 @@ import React from "react";
 import styled from 'styled-components';
 
 const TodoInput = styled.input`
-    padding: 16px 16px 16px 60px;
-    border: none;
-    background: rgba(0, 0, 0, 0.003);
-    box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
-    position: relative;
-    margin: 0;
-    width: 100%;
-    font-size: 24px;
+padding: 16px 16px 16px 55px;
+margin: 0px;
+width: 100%;
+border: none;
+font-size: 24px;
+box-sizing: border-box;
+&::-webkit-input-placeholder {
     font-style: italic;
-    font-family: inherit;
-    font-weight:  100;
-    line-height: 1.4em;
-    outline: none;
-    color: black;
-    box-sizing: border-box;
-    font-smoothing: antialiased;
+    color: #e6e6e6;
+}
+&::-moz-input-placeholder {
+    font-style: italic;
+    color: #e6e6e6;
+}
+&::input-placeholder {
+    font-style: italic;
+    color: #e6e6e6;
+}
 `
 const Allchecked = styled.input`
     transform: rotate(90deg);

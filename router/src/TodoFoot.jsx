@@ -2,7 +2,6 @@ import React from "react";
 import styled from 'styled-components';
 import {
     BrowserRouter as Router,
-    Route,
     Link
 } from 'react-router-dom'
 
@@ -102,7 +101,7 @@ class TodoFoot extends React.Component {
                 <Router>
                     <Filter>
                         <FilterLi>
-                            <FilterBtn to='/' onClick={this.all} checked={this.state.isOnClick === 'all'}>All</FilterBtn>
+                            <FilterBtn to='/all' onClick={this.all} checked={this.state.isOnClick === 'all'}>All</FilterBtn>
                             <FilterBtn to='/active' onClick={this.active} checked={this.state.isOnClick === 'active'}>Active</FilterBtn>
                             <FilterBtn to='/completed' onClick={this.completed} checked={this.state.isOnClick === 'completed'}>Completed</FilterBtn>
                         </FilterLi>

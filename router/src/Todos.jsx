@@ -4,13 +4,7 @@ import AddItem from "./AddItem.jsx";
 import TodoList from "./TodoList.jsx";
 import TodoFoot from "./TodoFoot.jsx";
 import styled, { injectGlobal } from 'styled-components';
-import {
-    BrowserRouter as Router,
-    Route,
-    Link,
-    Redirect,
-    Switch
-  } from 'react-router-dom';
+
 
 
 const TodoApp = styled.div`
@@ -112,11 +106,11 @@ button {
 `
 
 class App extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            todos: [],
-            filter: 'all',
+            todos: localStorage.getItem('Todos') ? JSON.parse (localStorage.getItem('Todos')):[],
+            filter: props.filter ? props.filter : 'all',
             isAllChecked: false,
         };
     }
@@ -125,6 +119,7 @@ class App extends React.Component {
     addTodo = (todoItem) => {
         this.state.todos.unshift(todoItem);
         this.setState({ todos: this.state.todos });
+        localStorage.setItem('Todos',JSON.stringify(this.state.todos))
     }
 
     changeTodoState = (index, isDone, isChangeAll = false) => {
@@ -140,6 +135,7 @@ class App extends React.Component {
             this.state.todos[index].isDone = isDone;
             this.setState({ todos: this.state.todos });
         }
+        localStorage.setItem('Todos',JSON.stringify(this.state.todos))
     }
 
     clearDone = () => {
@@ -147,11 +143,14 @@ class App extends React.Component {
         this.setState({
             todos: todos,
         });
+        localStorage.setItem('Todos',JSON.stringify(this.state.todos))
     }
 
     deleteTodo = (index) => {
         this.state.todos.splice(index, 1);
         this.setState({ todos: this.state.todos });
+        localStorage.setItem('Todos',JSON.stringify(this.state.todos))
+        
     }
 
 
@@ -162,13 +161,13 @@ class App extends React.Component {
     }
 
     newTodo = () => {
-        const p = this.state.filter;
+        const status = this.state.filter;
         let newtodos = [];
-        if (p === "active") {
+        if (status === "active") {
             newtodos = this.state.todos.filter((todo) => !todo.isDone);
-        } else if (p === "completed") {
+        } else if (status === "completed") {
             newtodos = this.state.todos.filter((todo) => todo.isDone);
-        } else if (p === "all") {
+        } else if (status === "all") {
             newtodos = this.state.todos;
         }
         return newtodos;
@@ -184,7 +183,7 @@ class App extends React.Component {
             <div>
                 <TodoApp>
                     <AddItem todos={this.state.todos} addTodo={this.addTodo} changeTodoState={this.changeTodoState} />
-                    <TodoList deleteTodo={this.deleteTodo} todos={this.newTodo()} changeTodoState={this.changeTodoState} />
+                    <TodoList deleteTodo={this.deleteTodo} todos={this.newTodo()} changeTodoState={this.changeTodoState} id={this.state.todos.id} />
                     <TodoFoot clearDone={this.clearDone} {...props} filterTodo={this.filterTodo} />
                 </TodoApp>
                 <AnotherFooter>
@@ -194,4 +193,14 @@ class App extends React.Component {
         )
     }
 }
-export default App;
+
+const TodosAll = () =>{
+    return <App filter="all" />
+}
+const TodosActive = () =>{
+    return <App filter="active"/>
+}
+const TodosCompleted = () =>{
+    return <App filter="completed" />
+}
+export {TodosAll,TodosActive,TodosCompleted};
